@@ -21,7 +21,7 @@ import (
 
 type Registry struct {
 	ID             int `gorm:"primarykey"`
-	Name           string
+	Name           string `gorm:"uniqueIndex"`
 	Description    string
 	Type           string
 	URL            string
