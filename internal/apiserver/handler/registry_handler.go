@@ -107,6 +107,9 @@ func (rh *RegistryHandler) CreateRegistry(ctx context.Context, request *registry
 
 	created, err := rh.registryRepo.CreateRegistry(ctx, domainRegistry)
 	if err != nil {
+		if err.Error() == "registry name already exists" {
+			return nil, status.Error(codes.AlreadyExists, err.Error())
+		}
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
@@ -131,6 +134,9 @@ func (rh *RegistryHandler) UpdateRegistry(ctx context.Context, request *registry
 		domainRegistry.SetCredential(registry.NewBasicCredential(b.Username, b.Password))
 	}
 	if err := rh.registryRepo.UpdateRegistry(ctx, domainRegistry); err != nil {
+		if err.Error() == "registry name already exists" {
+			return nil, status.Error(codes.AlreadyExists, err.Error())
+		}
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 

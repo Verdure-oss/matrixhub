@@ -16,6 +16,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 	"crypto/tls"
 	"net/http"
 	"time"
@@ -56,6 +57,11 @@ func (r *RegistryRepo) GetRegistry(ctx context.Context, id int) (*registry.Regis
 }
 
 func (r *RegistryRepo) CreateRegistry(ctx context.Context, reg registry.Registry) (*registry.Registry, error) {
+	var count int64
+	r.db.WithContext(ctx).Model(&registry.Registry{}).Where("name = ?", reg.Name).Count(&count)
+	if count > 0 {
+		return nil, errors.New("registry name already exists")
+	}
 	if err := r.db.WithContext(ctx).Create(&reg).Error; err != nil {
 		return nil, err
 	}
@@ -63,6 +69,11 @@ func (r *RegistryRepo) CreateRegistry(ctx context.Context, reg registry.Registry
 }
 
 func (r *RegistryRepo) UpdateRegistry(ctx context.Context, reg registry.Registry) error {
+	var count int64
+	r.db.WithContext(ctx).Model(&registry.Registry{}).Where("name = ? AND id != ?", reg.Name, reg.ID).Count(&count)
+	if count > 0 {
+		return errors.New("registry name already exists")
+	}
 	return r.db.WithContext(ctx).Model(&registry.Registry{}).Where("id = ?", reg.ID).Updates(reg).Error
 }
 
