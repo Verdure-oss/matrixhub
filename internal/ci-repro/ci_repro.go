@@ -1,6 +1,6 @@
 package ci_repro
 
-// Generate returns a placeholder value. This file intentionally does not compile.
+// Generate returns a placeholder value.
 func Generate() int {
-return "oops"
+	return 0
 }
